@@ -39,9 +39,6 @@
 
 pyedusys
 ============
-|Build Status| |Coverage Status| |PyPI| |PyPi downloads| |Requirements
-Status| |License| |Docs|
-
   如果对这个代码感兴趣，也可以安装对应的开发环境，并在这个环境下进行代码开发和修改。如下是自己搭建环境所用到的配置，供参考。
 
 Envirentment
@@ -98,5 +95,6 @@ Install
   ![图片：主窗体](resource/主窗体.png)
 
   如果出现报错，则需要根据对应的错误信息去排除，无法一一说明。需要注意的是，python2.x 和python3.x 的Tkinter差别还是很多的，因此这个代码仅能在python2.x下运行。
+
 
 [END]
