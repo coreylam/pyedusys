@@ -88,6 +88,14 @@ Install
 
     mysql -h 主机地址 -u用户名 －p用户密码 -D数据库名称
 
+### Step2 安装Tkinter
+  在Ubuntu系统下, 需要安装Tkinter(如果是Windows系统, 默认是安装了的, 可跳过这个步骤).代码如下:
+  
+    sudo apt-get install python-tk
+    sudo apt-get install python-imaging-tk
+    sudo apt-get install python-pip  # 安装pip
+    sudo pip install requests
+
 ### Step2 运行main_plain.py
 
   由于大部分的依赖库基本是自带的，所以Python环境安装之后，基本就可以开始编程了。此时运行 `main_plain.py` ，如果能正常运行（出现如下图片的窗体），则说明环境搭建OK。
