@@ -114,4 +114,9 @@ Install
 ### 导出数据库
 	
     mysqldump -u root -p db_education > db_education.sql
-[END]
+    
+### pyinstaller打包exe
+
+	pyinstaller -F -w main_plain.py
+    
+[END]()
