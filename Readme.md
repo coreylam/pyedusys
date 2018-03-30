@@ -87,8 +87,14 @@ Install
   设置远程连接后，可以在客户端通过如下命令确认是否能正常连接远程服务器：
 
     mysql -h 主机地址 -u用户名 －p用户密码 -D数据库名称
+    
+### step2 导入数据库
 
-### Step2 安装Tkinter
+	mysql -u 用户名 -p
+    use db_education
+    mysql>source db_education.sql
+
+### Step3 安装Tkinter
   在Ubuntu系统下, 需要安装Tkinter(如果是Windows系统, 默认是安装了的, 可跳过这个步骤).代码如下:
   
     sudo apt-get install python-tk
@@ -96,7 +102,7 @@ Install
     sudo apt-get install python-pip  # 安装pip
     sudo pip install requests
 
-### Step2 运行main_plain.py
+### Step4 运行main_plain.py
 
   由于大部分的依赖库基本是自带的，所以Python环境安装之后，基本就可以开始编程了。此时运行 `main_plain.py` ，如果能正常运行（出现如下图片的窗体），则说明环境搭建OK。
 
@@ -104,5 +110,8 @@ Install
 
   如果出现报错，则需要根据对应的错误信息去排除，无法一一说明。需要注意的是，python2.x 和python3.x 的Tkinter差别还是很多的，因此这个代码仅能在python2.x下运行。
 
-
+## 其他
+### 导出数据库
+	
+    mysqldump -u root -p db_education > db_education.sql
 [END]

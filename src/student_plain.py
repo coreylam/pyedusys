@@ -51,16 +51,18 @@ class StudentPlain():
         labeltop.grid(row=0, columnspan=4)
 
         self.tree=ttk.Treeview(self.root, show="headings")#表格  
-        self.tree["columns"]=("学号","姓名","性别", '年龄', '家长姓名', '电话', '课时余额', "账户余额")  
+        self.tree["columns"]=("学号","姓名","性别", '年龄', '出生日期', '家长姓名', '电话', '课时余额', "账户余额","备注")  
 
-        self.tree.column("学号",width=80)   #表示列,不显示  
-        self.tree.column("姓名",width=80)   #表示列,不显示  
-        self.tree.column("性别",width=80)  
-        self.tree.column("年龄",width=80)  
+        self.tree.column("学号",width=50)   #表示列,不显示  
+        self.tree.column("姓名",width=50)   #表示列,不显示  
+        self.tree.column("性别",width=50)  
+        self.tree.column("年龄",width=50)  
+        self.tree.column("出生日期",width=80)  
         self.tree.column("家长姓名",width=80)  
         self.tree.column("电话",width=80)  
         self.tree.column("课时余额",width=80)  
         self.tree.column("账户余额",width=80)  
+        self.tree.column("备注",width=120)  
           
         for a_name in self.tree["columns"]:
             self.tree.heading(a_name,text=a_name)  
@@ -82,7 +84,7 @@ class StudentPlain():
                 # student_dict['phone']=temp[5] 
                 # student_dict['lessonnum']=temp[6] 
                 # student_dict['accountnum']=temp[7] 
-                temp=(alist['id'],alist['name'],alist['gender'],alist['age'],alist['pname'],alist['phone'],alist['lessonnum'],alist['accountnum'])
+                temp=(alist['id'],alist['name'],alist['gender'],alist['age'],alist['birthday'],alist['pname'],alist['phone'],alist['lessonnum'],alist['accountnum'],alist['note'])
                 self.tree.insert("",0,values=temp) #插入数据，  
             # self.tree.grid(row=3, columnspan=4)
         except Exception, ex:
@@ -129,6 +131,7 @@ class StudentPlain():
             self.entry_list[i].grid(row=i+1,column=1)
 
             
+        self.entry_list[3]['state']='readonly'
         if action == 'update':
             self.entry_list[0]['state']='readonly'
         # 设置entry默认值， 改用StringVar + textvariable
@@ -153,10 +156,12 @@ class StudentPlain():
         student_dict['name']=self.var_list[1].get().strip()
         student_dict['gender']=self.var_list[2].get().strip()
         student_dict['age']=self.var_list[3].get().strip()
-        student_dict['pname']=self.var_list[4].get().strip()
-        student_dict['phone']=self.var_list[5].get().strip()
-        student_dict['lessonnum']=self.var_list[6].get().strip()
-        student_dict['accountnum']=self.var_list[7].get().strip()
+        student_dict['birthday']=self.var_list[4].get().strip()
+        student_dict['pname']=self.var_list[5].get().strip()
+        student_dict['phone']=self.var_list[6].get().strip()
+        student_dict['lessonnum']=self.var_list[7].get().strip()
+        student_dict['accountnum']=self.var_list[8].get().strip()
+        student_dict['note']=self.var_list[9].get().strip()
         
         
         if "" in student_dict.values():
@@ -179,7 +184,7 @@ class StudentPlain():
         print "submit_student_info"
         
     def add_item(self):
-        self.edit_view(['','','','','','','',''], action='add')
+        self.edit_view(['','','','','','','','','',''], action='add')
         
     def delete_item(self):
         print 'delete_item'

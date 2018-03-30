@@ -9,6 +9,7 @@ import ttk
 import json
 import sys
 import MySQLdb
+import datetime
 
 
 class DatabaseControl():
@@ -48,7 +49,7 @@ class DatabaseControl():
             return True
         except Exception,ex:
             err_str = "connect sql %s@%s:%s -p %s failed"%(self.user, self.host,str(self.port), self.passwd)
-            raise RuntimeError(u"[看这里]%s\n%s"%(err_str, ex))
+            raise RuntimeError(u"[数据库连接失败]%s\n%s"%(err_str, ex))
             return False
             
     
@@ -157,7 +158,7 @@ class DatabaseControl():
         return True
     
     def get_all_student(self):
-        sqlcmd = "select studentnum, name, gender, age, pname, phone, lessonnum, accountnum from student"
+        sqlcmd = "select studentnum, name, gender, age, pname, phone, lessonnum, accountnum, birthday, note from student"
         self.connect()
         if self.cur.execute(sqlcmd) == 0: 
                 print "call sql failed"
@@ -175,13 +176,30 @@ class DatabaseControl():
             student_dict['phone']=temp[5] 
             student_dict['lessonnum']=temp[6] 
             student_dict['accountnum']=temp[7] 
+            student_dict['birthday']=temp[8] 
+            student_dict['note']=temp[9] 
             temp = self.cur.fetchone()
             self.student_list.append(student_dict)
         self.close()
         return self.student_list
         
+    def get_age_by_birthday(self, birthday):
+        bd = birthday.split('-')
+        print bd
+        if not bool(bd[0]):
+            return 0
+        if len(bd) == 3:
+            print bd
+            date = datetime.datetime.strptime(birthday,'%Y-%m-%d')
+            print date
+        elif len(bd) == 1:
+            date = datetime.datetime.strptime(birthday,'%Y%m%d')
+        else:
+            return 0
+        return datetime.datetime.now().year - date.year
+        
     def get_student_by_id(self, id):
-        sqlcmd = "select studentnum, name, gender, age, pname, phone, lessonnum, accountnum from student where studentnum='%s'"%id
+        sqlcmd = "select studentnum, name, gender, age, pname, phone, lessonnum, accountnum, birthday, note  from student where studentnum='%s'"%id
         self.connect()
         if self.cur.execute(sqlcmd) == 0: 
                 print "call sql failed"
@@ -197,6 +215,8 @@ class DatabaseControl():
         student_dict['phone']=temp[5] 
         student_dict['lessonnum']=temp[6] 
         student_dict['accountnum']=temp[7] 
+        student_dict['birthday']=temp[8] 
+        student_dict['note']=temp[9] 
         self.close()
         return student_dict
         
@@ -237,13 +257,15 @@ class DatabaseControl():
             return False
 
         self.connect()
+        if type(student_dict['birthday']) == type(''):
+            student_dict['age'] = str(self.get_age_by_birthday(student_dict['birthday']))
         if action == 'add':
         # INSERT INTO `course` (`coursenum`, `name`, `lessonnum`, `starttime`, `endtime`) VALUES ('S1111', 'ddd', 'dfasdf', 'asdfasdf','','')
-            sqlcmd = "INSERT INTO student ( studentnum, name, gender, age, pname, phone, lessonnum, accountnum) VALUES('%s','%s','%s','%s', '%s','%s','%s','%s')"%(student_dict['id'], student_dict['name'], student_dict['gender'], student_dict['age'], student_dict['pname'], student_dict['phone'], student_dict['lessonnum'], student_dict['accountnum'])
+            sqlcmd = "INSERT INTO student ( studentnum, name, gender, age, pname, phone, lessonnum, accountnum, birthday, note) VALUES('%s','%s','%s','%s', '%s','%s','%s','%s','%s','%s')"%(student_dict['id'], student_dict['name'], student_dict['gender'], student_dict['age'], student_dict['pname'], student_dict['phone'], student_dict['lessonnum'], student_dict['accountnum'], student_dict['birthday'], student_dict['note'])
         elif action == 'update':
         ##UPDATE `teacher` SET `Name` = '小红111' WHERE `teacher`.`TeacherNO` = 'S000002';
-            sqlcmd = "UPDATE INTO student ( studentnum, name, gender, age, pname, phone, lessonnum, accountnum) VALUES('%s','%s','%s','%s', '%s','%s','%s','%s')"%(student_dict['id'], student_dict['name'], student_dict['gender'], student_dict['age'], student_dict['pname'], student_dict['phone'], student_dict['lessonnum'], student_dict['accountnum'])
-            sqlcmd = "UPDATE student SET name='%s', gender='%s', age='%s' , pname='%s', phone='%s', lessonnum='%s', accountnum='%s' where studentnum='%s'"%(student_dict['name'], student_dict['gender'], student_dict['age'], student_dict['pname'], student_dict['phone'], student_dict['lessonnum'], student_dict['accountnum'], student_dict['id'])
+            # sqlcmd = "UPDATE INTO student ( studentnum, name, gender, age, pname, phone, lessonnum, accountnum, birthday, note) VALUES('%s','%s','%s','%s', '%s','%s','%s','%s','%s','%s')"%(student_dict['id'], student_dict['name'], student_dict['gender'], student_dict['age'], student_dict['pname'], student_dict['phone'], student_dict['lessonnum'], student_dict['accountnum'], student_dict['birthday'], student_dict['note'])
+            sqlcmd = "UPDATE student SET name='%s', gender='%s', age='%s' , pname='%s', phone='%s', lessonnum='%s', accountnum='%s', birthday='%s', note='%s' where studentnum='%s'"%(student_dict['name'], student_dict['gender'], student_dict['age'], student_dict['pname'], student_dict['phone'], student_dict['lessonnum'], student_dict['accountnum'], student_dict['birthday'], student_dict['note'], student_dict['id'])
         else:
             print "invalid action %s" %action
             self.connect()

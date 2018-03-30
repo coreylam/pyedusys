@@ -42,7 +42,7 @@ class MainPlain():
         ## 管理
         manageMenu = Menu(menubar, tearoff = 0)
         manageMenu.add_command(label=u'管理学生', command= self.manage_student)
-        manageMenu.add_command(label=u'课程学生', command= self.manage_course) 
+        manageMenu.add_command(label=u'管理课程', command= self.manage_course) 
         
         ## 编辑
         editMenu = Menu(menubar, tearoff = 0)
