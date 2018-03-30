@@ -47,7 +47,8 @@ class DatabaseControl():
             self.cur = self.conn.cursor()
             return True
         except Exception,ex:
-            print "connect sql failed"
+            err_str = "connect sql %s@%s:%s -p %s failed"%(self.user, self.host,str(self.port), self.passwd)
+            raise RuntimeError(u"[看这里]%s\n%s"%(err_str, ex))
             return False
             
     
@@ -60,7 +61,7 @@ class DatabaseControl():
         if self.cur.execute(sqlcmd) == 0: 
                 print "call sql failed"
                 self.close()
-                return []
+                return
         temp = self.cur.fetchone()
         self.course_list = []
         while temp:
@@ -81,7 +82,8 @@ class DatabaseControl():
         if self.cur.execute(sqlcmd) == 0: 
                 print "call sql failed"
                 self.close()
-                return []
+                raise RuntimeError("执行sql命令: %s 失败"%sqlcmd)
+                
         temp = self.cur.fetchone()
         course_dict={}
         course_dict['id']=temp[0]
