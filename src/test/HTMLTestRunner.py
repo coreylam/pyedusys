@@ -1,3 +1,4 @@
+#!/usr/bin/python
 #coding=utf-8
 """
 A TestRunner for use with the Python unit testing framework. It
@@ -65,19 +66,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 # URL: http://tungwaiyip.info/software/HTMLTestRunner.html
 
-__author__ = "Wai Yip Tung,  Findyou"
-__version__ = "0.8.2.1"
+__author__ = "Wai Yip Tung"
+__version__ = "0.8.2"
 
 
 """
 Change History
-
-Version 0.8.2.1 -Findyou
-* 支持中文，汉化
-* 调整样式，美化（需要连入网络，使用的百度的Bootstrap.js）
-* 增加 通过分类显示、测试人员、通过率的展示
-* 优化“详细”与“收起”状态的变换
-* 增加返回顶部的锚点
 
 Version 0.8.2
 * Show output inline instead of popup window (Viorel Lupu).
@@ -104,7 +98,9 @@ import sys
 import time
 import unittest
 from xml.sax import saxutils
-import sys
+
+
+# add for supporting chinese
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
@@ -135,6 +131,8 @@ class OutputRedirector(object):
 
 stdout_redirector = OutputRedirector(sys.stdout)
 stderr_redirector = OutputRedirector(sys.stderr)
+
+
 
 # ----------------------------------------------------------------------
 # Template
@@ -180,20 +178,13 @@ class Template_mixin(object):
     """
 
     STATUS = {
-    0: '通过',
-    1: '失败',
-    2: '错误',
+    0: 'pass',
+    1: 'fail',
+    2: 'error',
     }
 
-    # add by coreylam
-    STATUS_BTN = {
-    0: 'btn-success',
-    1: 'btn-danger',
-    2: 'btn-danger'
-    }
-    DEFAULT_TITLE = '单元测试报告'
+    DEFAULT_TITLE = 'Unit Test Report'
     DEFAULT_DESCRIPTION = ''
-    DEFAULT_TESTER='测试人员'
 
     # ------------------------------------------------------------------------
     # HTML Template
@@ -205,28 +196,20 @@ class Template_mixin(object):
     <title>%(title)s</title>
     <meta name="generator" content="%(generator)s"/>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <link href="http://libs.baidu.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet">
-    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
-    <script src="http://libs.baidu.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
     %(stylesheet)s
 </head>
-<body >
-<script language="javascript" type="text/javascript">
+<body>
+<script language="javascript" type="text/javascript"><!--
 output_list = Array();
 
-/*level 调整增加只显示通过用例的分类 --Findyou
-0:Summary //all hiddenRow
-1:Failed  //pt hiddenRow, ft none
-2:Pass    //pt none, ft hiddenRow
-3:All     //pt none, ft none
-*/
+/* level - 0:Summary; 1:Failed; 2:All */
 function showCase(level) {
     trs = document.getElementsByTagName("tr");
     for (var i = 0; i < trs.length; i++) {
         tr = trs[i];
         id = tr.id;
         if (id.substr(0,2) == 'ft') {
-            if (level == 2 || level == 0 ) {
+            if (level < 1) {
                 tr.className = 'hiddenRow';
             }
             else {
@@ -234,36 +217,22 @@ function showCase(level) {
             }
         }
         if (id.substr(0,2) == 'pt') {
-            if (level < 2) {
-                tr.className = 'hiddenRow';
+            if (level > 1) {
+                tr.className = '';
             }
             else {
-                tr.className = '';
+                tr.className = 'hiddenRow';
             }
         }
     }
-
-    //加入【详细】切换文字变化 --Findyou
-    detail_class=document.getElementsByClassName('detail');
-	//console.log(detail_class.length)
-	if (level == 3) {
-		for (var i = 0; i < detail_class.length; i++){
-			detail_class[i].innerHTML="收起"
-		}
-	}
-	else{
-			for (var i = 0; i < detail_class.length; i++){
-			detail_class[i].innerHTML="详细"
-		}
-	}
 }
+
 
 function showClassDetail(cid, count) {
     var id_list = Array(count);
     var toHide = 1;
     for (var i = 0; i < count; i++) {
-        //ID修改 点 为 下划线 -Findyou
-        tid0 = 't' + cid.substr(1) + '_' + (i+1);
+        tid0 = 't' + cid.substr(1) + '.' + (i+1);
         tid = 'f' + tid0;
         tr = document.getElementById(tid);
         if (!tr) {
@@ -277,17 +246,30 @@ function showClassDetail(cid, count) {
     }
     for (var i = 0; i < count; i++) {
         tid = id_list[i];
-        //修改点击无法收起的BUG，加入【详细】切换文字变化 --Findyou
         if (toHide) {
+            document.getElementById('div_'+tid).style.display = 'none'
             document.getElementById(tid).className = 'hiddenRow';
-            document.getElementById(cid).innerText = "详细"
         }
         else {
             document.getElementById(tid).className = '';
-            document.getElementById(cid).innerText = "收起"
         }
     }
 }
+
+
+function showTestDetail(div_id){
+    var details_div = document.getElementById(div_id)
+    var displayState = details_div.style.display
+    // alert(displayState)
+    if (displayState != 'block' ) {
+        displayState = 'block'
+        details_div.style.display = 'block'
+    }
+    else {
+        details_div.style.display = 'none'
+    }
+}
+
 
 function html_escape(s) {
     s = s.replace(/&/g,'&amp;');
@@ -295,7 +277,23 @@ function html_escape(s) {
     s = s.replace(/>/g,'&gt;');
     return s;
 }
-</script>
+
+/* obsoleted by detail in <div>
+function showOutput(id, name) {
+    var w = window.open("", //url
+                    name,
+                    "resizable,scrollbars,status,width=800,height=450");
+    d = w.document;
+    d.write("<pre>");
+    d.write(html_escape(output_list[id]));
+    d.write("\n");
+    d.write("<a href='javascript:window.close()'>close</a>\n");
+    d.write("</pre>\n");
+    d.close();
+}
+*/
+--></script>
+
 %(heading)s
 %(report)s
 %(ending)s
@@ -314,13 +312,23 @@ function html_escape(s) {
 
     STYLESHEET_TMPL = """
 <style type="text/css" media="screen">
-body        { font-family: Microsoft YaHei,Tahoma,arial,helvetica,sans-serif;padding: 20px; font-size: 150%; }
+body        { font-family: verdana, arial, helvetica, sans-serif; font-size: 80%; }
 table       { font-size: 100%; }
+pre         { }
 
 /* -- heading ---------------------------------------------------------------------- */
+h1 {
+    font-size: 16pt;
+    color: gray;
+}
 .heading {
     margin-top: 0ex;
     margin-bottom: 1ex;
+}
+
+.heading .attribute {
+    margin-top: 1ex;
+    margin-bottom: 0;
 }
 
 .heading .description {
@@ -328,29 +336,81 @@ table       { font-size: 100%; }
     margin-bottom: 6ex;
 }
 
+/* -- css div popup ------------------------------------------------------------------------ */
+a.popup_link {
+}
+
+a.popup_link:hover {
+    color: red;
+}
+
+.popup_window {
+    display: none;
+    position: relative;
+    left: 0px;
+    top: 0px;
+    /*border: solid #627173 1px; */
+    padding: 10px;
+    background-color: #E6E6D6;
+    font-family: "Lucida Console", "Courier New", Courier, monospace;
+    text-align: left;
+    font-size: 8pt;
+    width: 500px;
+}
+
+}
 /* -- report ------------------------------------------------------------------------ */
+#show_detail_line {
+    margin-top: 3ex;
+    margin-bottom: 1ex;
+}
+#result_table {
+    width: 80%;
+    border-collapse: collapse;
+    border: 1px solid #777;
+}
+#header_row {
+    font-weight: bold;
+    color: white;
+    background-color: #777;
+}
+#result_table td {
+    border: 1px solid #777;
+    padding: 2px;
+}
 #total_row  { font-weight: bold; }
-.passCase   { color: #5cb85c; }
-.failCase   { color: #d9534f; font-weight: bold; }
-.errorCase  { color: #f0ad4e; font-weight: bold; }
+.passClass  { background-color: #6c6; }
+.failClass  { background-color: #c60; }
+.errorClass { background-color: #c00; }
+.passCase   { color: #6c6; }
+.failCase   { color: #c60; font-weight: bold; }
+.errorCase  { color: #c00; font-weight: bold; }
 .hiddenRow  { display: none; }
 .testcase   { margin-left: 2em; }
+
+
+/* -- ending ---------------------------------------------------------------------- */
+#ending {
+}
+
 </style>
 """
+
+
 
     # ------------------------------------------------------------------------
     # Heading
     #
 
     HEADING_TMPL = """<div class='heading'>
-<h1 style="font-family: Microsoft YaHei">%(title)s</h1>
+<h1>%(title)s</h1>
 %(parameters)s
 <p class='description'>%(description)s</p>
 </div>
 
 """ # variables: (title, parameters, description)
 
-    HEADING_ATTRIBUTE_TMPL = """<p class='attribute'><strong>%(name)s : </strong> %(value)s</p>
+    HEADING_ATTRIBUTE_TMPL = """<p class='attribute'><strong>%(name)s:</strong> %(value)s</p>
 """ # variables: (name, value)
 
 
@@ -358,15 +418,14 @@ table       { font-size: 100%; }
     # ------------------------------------------------------------------------
     # Report
     #
-    # 汉化,加美化效果 --Findyou
+
     REPORT_TMPL = """
-<p id='show_detail_line'>
-<a class="btn btn-primary" href='javascript:showCase(0)'>概要{ %(passrate)s }</a>
-<a class="btn btn-danger" href='javascript:showCase(1)'>失败{ %(fail)s }</a>
-<a class="btn btn-success" href='javascript:showCase(2)'>通过{ %(Pass)s }</a>
-<a class="btn btn-info" href='javascript:showCase(3)'>所有{ %(count)s }</a>
+<p id='show_detail_line'>Show
+<a href='javascript:showCase(0)'>Summary</a>
+<a href='javascript:showCase(1)'>Failed</a>
+<a href='javascript:showCase(2)'>All</a>
 </p>
-<table id='result_table' class="table table-condensed table-bordered table-hover">
+<table id='result_table'>
 <colgroup>
 <col align='left' />
 <col align='right' />
@@ -375,95 +434,82 @@ table       { font-size: 100%; }
 <col align='right' />
 <col align='right' />
 </colgroup>
-<tr id='header_row' class="text-center success" style="font-weight: bold;font-size: 16px;">
-    <td>用例集/测试用例</td>
-    <td>总计</td>
-    <td>通过</td>
-    <td>失败</td>
-    <td>错误</td>
-    <td>详细</td>
+<tr id='header_row'>
+    <td>Test Group/Test case</td>
+    <td>Count</td>
+    <td>Pass</td>
+    <td>Fail</td>
+    <td>Error</td>
+    <td>View</td>
 </tr>
 %(test_list)s
-<tr id='total_row' class="text-center active">
-    <td>总计</td>
+<tr id='total_row'>
+    <td>Total</td>
     <td>%(count)s</td>
     <td>%(Pass)s</td>
     <td>%(fail)s</td>
     <td>%(error)s</td>
-    <td>通过率：%(passrate)s</td>
+    <td>&nbsp;</td>
 </tr>
 </table>
-""" # variables: (test_list, count, Pass, fail, error ,passrate)
+""" # variables: (test_list, count, Pass, fail, error)
 
     REPORT_CLASS_TMPL = r"""
-<tr class='%(style)s warning'>
+<tr class='%(style)s'>
     <td>%(desc)s</td>
-    <td class="text-center">%(count)s</td>
-    <td class="text-center">%(Pass)s</td>
-    <td class="text-center">%(fail)s</td>
-    <td class="text-center">%(error)s</td>
-    <td class="text-center"><a href="javascript:showClassDetail('%(cid)s',%(count)s)" class="detail" id='%(cid)s'>详细</a></td>
+    <td>%(count)s</td>
+    <td>%(Pass)s</td>
+    <td>%(fail)s</td>
+    <td>%(error)s</td>
+    <td><a href="javascript:showClassDetail('%(cid)s',%(count)s)">Detail</a></td>
 </tr>
 """ # variables: (style, desc, count, Pass, fail, error, cid)
 
-    #失败 的样式，去掉原来JS效果，美化展示效果  -Findyou
+
     REPORT_TEST_WITH_OUTPUT_TMPL = r"""
 <tr id='%(tid)s' class='%(Class)s'>
     <td class='%(style)s'><div class='testcase'>%(desc)s</div></td>
     <td colspan='5' align='center'>
-    <!--默认收起错误信息 -Findyou
-    <button id='btn_%(tid)s' type="button"  class="btn %(btn_status)s btn-xs collapsed" data-toggle="collapse" data-target='#div_%(tid)s'>%(status)s</button>
-    <div id='div_%(tid)s' class="collapse">  -->
 
-    <!-- 默认展开错误信息 -Findyou -->
-    <button id='btn_%(tid)s' type="button"  class="btn %(btn_status)s btn-xs" data-toggle="collapse" data-target='#div_%(tid)s'>%(status)s</button>
-    <div id='div_%(tid)s' class="collapse in" >
-    <pre style ="text-align: left">
-    %(script)s
-    </pre>
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_%(tid)s')" >
+        %(status)s</a>
+
+    <div id='div_%(tid)s' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_%(tid)s').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        %(script)s
+        </pre>
     </div>
-    </td>
-</tr>
-""" # variables: (tid, Class, style, desc, status)
-    ## add by coreylam, 结果为通过时，按钮为绿色，但默认不展开
-    REPORT_TEST_WITH_OUTPUT_TMPL_0 = r"""
-<tr id='%(tid)s' class='%(Class)s'>
-    <td class='%(style)s'><div class='testcase'>%(desc)s</div></td>
-    <td colspan='5' align='center'>
-    <!--默认收起错误信息 -->
-    <button id='btn_%(tid)s' type="button"  class="btn %(btn_status)s btn-xs collapsed" data-toggle="collapse" data-target='#div_%(tid)s'>%(status)s</button>
-    <div id='div_%(tid)s' class="collapse" >
-    <pre style ="text-align: left">
-    %(script)s
-    </pre>
-    </div>
-    </td>
+    <!--css div popup end-->
+
     </td>
 </tr>
 """ # variables: (tid, Class, style, desc, status)
 
 
-    # 通过 的样式，加标签效果  -Findyou
     REPORT_TEST_NO_OUTPUT_TMPL = r"""
 <tr id='%(tid)s' class='%(Class)s'>
     <td class='%(style)s'><div class='testcase'>%(desc)s</div></td>
-    <td colspan='5' align='center'><span class="label label-success success">%(status)s</span></td>
+    <td colspan='5' align='center'>%(status)s</td>
 </tr>
 """ # variables: (tid, Class, style, desc, status)
+
 
     REPORT_TEST_OUTPUT_TMPL = r"""
 %(id)s: %(output)s
 """ # variables: (id, output)
 
+
+
     # ------------------------------------------------------------------------
     # ENDING
     #
-    # 增加返回顶部按钮  --Findyou
-    ENDING_TMPL = """<div id='ending'>&nbsp;</div>
-    <div style=" position:fixed;right:50px; bottom:30px; width:20px; height:20px;cursor:pointer">
-    <a href="#"><span class="glyphicon glyphicon-eject" style = "font-size:30px;" aria-hidden="true">
-    </span></a></div>
-    """
+
+    ENDING_TMPL = """<div id='ending'>&nbsp;</div>"""
 
 # -------------------- The end of the Template class -------------------
 
@@ -491,8 +537,6 @@ class _TestResult(TestResult):
         #   stack trace,
         # )
         self.result = []
-        #增加一个测试通过率 --Findyou
-        self.passrate=float(0)
 
 
     def startTest(self, test):
@@ -569,7 +613,7 @@ class _TestResult(TestResult):
 class HTMLTestRunner(Template_mixin):
     """
     """
-    def __init__(self, stream=sys.stdout, verbosity=1,title=None,description=None,tester=None):
+    def __init__(self, stream=sys.stdout, verbosity=1, title=None, description=None):
         self.stream = stream
         self.verbosity = verbosity
         if title is None:
@@ -580,10 +624,6 @@ class HTMLTestRunner(Template_mixin):
             self.description = self.DEFAULT_DESCRIPTION
         else:
             self.description = description
-        if tester is None:
-            self.tester = self.DEFAULT_TESTER
-        else:
-            self.tester = tester
 
         self.startTime = datetime.datetime.now()
 
@@ -612,7 +652,7 @@ class HTMLTestRunner(Template_mixin):
         r = [(cls, rmap[cls]) for cls in classes]
         return r
 
-    #替换测试结果status为通过率 --Findyou
+
     def getReportAttributes(self, result):
         """
         Return report attributes as a list of (name, value).
@@ -621,20 +661,17 @@ class HTMLTestRunner(Template_mixin):
         startTime = str(self.startTime)[:19]
         duration = str(self.stopTime - self.startTime)
         status = []
-        status.append('共 %s' % (result.success_count + result.failure_count + result.error_count))
-        if result.success_count: status.append('通过 %s'    % result.success_count)
-        if result.failure_count: status.append('失败 %s' % result.failure_count)
-        if result.error_count:   status.append('错误 %s'   % result.error_count  )
+        if result.success_count: status.append('Pass %s'    % result.success_count)
+        if result.failure_count: status.append('Failure %s' % result.failure_count)
+        if result.error_count:   status.append('Error %s'   % result.error_count  )
         if status:
-            status = '，'.join(status)
-            self.passrate = str("%.2f%%" % (float(result.success_count) / float(result.success_count + result.failure_count + result.error_count) * 100))
+            status = ' '.join(status)
         else:
             status = 'none'
         return [
-            (u'测试人员', self.tester),
-            (u'开始时间',startTime),
-            (u'合计耗时',duration),
-            (u'测试结果',status + "，通过率= "+self.passrate),
+            ('Start Time', startTime),
+            ('Duration', duration),
+            ('Status', status),
         ]
 
 
@@ -659,7 +696,7 @@ class HTMLTestRunner(Template_mixin):
     def _generate_stylesheet(self):
         return self.STYLESHEET_TMPL
 
-    #增加Tester显示 -Findyou
+
     def _generate_heading(self, report_attrs):
         a_lines = []
         for name, value in report_attrs:
@@ -672,11 +709,10 @@ class HTMLTestRunner(Template_mixin):
             title = saxutils.escape(self.title),
             parameters = ''.join(a_lines),
             description = saxutils.escape(self.description),
-            tester= saxutils.escape(self.tester),
         )
         return heading
 
-    #生成报告  --Findyou添加注释
+
     def _generate_report(self, result):
         rows = []
         sortedResult = self.sortResult(result.result)
@@ -716,7 +752,6 @@ class HTMLTestRunner(Template_mixin):
             Pass = str(result.success_count),
             fail = str(result.failure_count),
             error = str(result.error_count),
-            passrate =self.passrate,
         )
         return report
 
@@ -724,30 +759,23 @@ class HTMLTestRunner(Template_mixin):
     def _generate_report_test(self, rows, cid, tid, n, t, o, e):
         # e.g. 'pt1.1', 'ft1.1', etc
         has_output = bool(o or e)
-        # ID修改点为下划线,支持Bootstrap折叠展开特效 - Findyou
-        tid = (n == 0 and 'p' or 'f') + 't%s_%s' % (cid+1,tid+1)
+        tid = (n == 0 and 'p' or 'f') + 't%s.%s' % (cid+1,tid+1)
         name = t.id().split('.')[-1]
         doc = t.shortDescription() or ""
         desc = doc and ('%s: %s' % (name, doc)) or name
-        if n == 0:
-            tmpl = has_output and self.REPORT_TEST_WITH_OUTPUT_TMPL_0 or self.REPORT_TEST_NO_OUTPUT_TMPL
-        else:
-            tmpl = has_output and self.REPORT_TEST_WITH_OUTPUT_TMPL or self.REPORT_TEST_NO_OUTPUT_TMPL
+        tmpl = has_output and self.REPORT_TEST_WITH_OUTPUT_TMPL or self.REPORT_TEST_NO_OUTPUT_TMPL
 
-        # utf-8 支持中文 - Findyou
-         # o and e should be byte string because they are collected from stdout and stderr?
-        if isinstance(o, str):
+        # o and e should be byte string because they are collected from stdout and stderr?
+        if isinstance(o,str):
             # TODO: some problem with 'string_escape': it escape \n and mess up formating
             # uo = unicode(o.encode('string_escape'))
-            # uo = o.decode('latin-1')
-            uo = o.decode('utf-8')
+            uo = o.decode('latin-1')
         else:
             uo = o
-        if isinstance(e, str):
+        if isinstance(e,str):
             # TODO: some problem with 'string_escape': it escape \n and mess up formating
             # ue = unicode(e.encode('string_escape'))
-            # ue = e.decode('latin-1')
-            ue = e.decode('utf-8')
+            ue = e.decode('latin-1')
         else:
             ue = e
 
@@ -759,11 +787,10 @@ class HTMLTestRunner(Template_mixin):
         row = tmpl % dict(
             tid = tid,
             Class = (n == 0 and 'hiddenRow' or 'none'),
-            style = n == 2 and 'errorCase' or (n == 1 and 'failCase' or 'passCase'),
+            style = n == 2 and 'errorCase' or (n == 1 and 'failCase' or 'none'),
             desc = desc,
             script = script,
             status = self.STATUS[n],
-            btn_status = self.STATUS_BTN[n],
         )
         rows.append(row)
         if not has_output:

@@ -1,3 +1,4 @@
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 import pickle
 import time
@@ -40,7 +41,9 @@ class DatabaseControl():
         self.print_setting()
     
     def print_setting(self):
-        print "%s,%s,%s,%s,%s"%(self.host,self.port,self.user,self.passwd,self.db_name)
+        res =  "%s,%s,%s,%s,%s"%(self.host,self.port,self.user,self.passwd,self.db_name)
+        print res
+        return res
                 
     def connect(self):
         try :
@@ -51,8 +54,7 @@ class DatabaseControl():
             err_str = "connect sql %s@%s:%s -p %s failed"%(self.user, self.host,str(self.port), self.passwd)
             raise RuntimeError(u"[数据库连接失败]%s\n%s"%(err_str, ex))
             return False
-            
-    
+
     def close(self):
         self.conn.close()
         
@@ -80,10 +82,16 @@ class DatabaseControl():
     def get_course_by_id(self, id):
         sqlcmd = "select coursenum,name, lessonnum,starttime, endtime from course where coursenum='%s'"%id
         self.connect()
-        if self.cur.execute(sqlcmd) == 0: 
-                print "call sql failed"
-                self.close()
-                raise RuntimeError("执行sql命令: %s 失败"%sqlcmd)
+        try:
+            if self.cur.execute(sqlcmd) == 0: 
+                    # print "call sql failed in get_course_by_id"
+                    print "执行sql命令：%s，结果为空"%sqlcmd
+                    self.close()
+                    # raise 
+                    return []
+        except Exception as e:
+            raise RuntimeError("执行sql命令: %s 失败. %s"%(sqlcmd, e))
+
                 
         temp = self.cur.fetchone()
         course_dict={}

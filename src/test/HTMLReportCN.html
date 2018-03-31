@@ -123,9 +123,9 @@ function html_escape(s) {
 <div class='heading'>
 <h1 style="font-family: Microsoft YaHei">单元测试报告</h1>
 <p class='attribute'><strong>测试人员 : </strong> corey</p>
-<p class='attribute'><strong>开始时间 : </strong> 2018-03-30 20:40:05</p>
-<p class='attribute'><strong>合计耗时 : </strong> 0:02:12.413025</p>
-<p class='attribute'><strong>测试结果 : </strong> 共 2，通过 1，错误 1，通过率= 50.00%</p>
+<p class='attribute'><strong>开始时间 : </strong> 2018-03-31 19:09:30</p>
+<p class='attribute'><strong>合计耗时 : </strong> 0:00:03.925000</p>
+<p class='attribute'><strong>测试结果 : </strong> 共 9，通过 9，通过率= 100.00%</p>
 
 <p class='description'>description</p>
 </div>
@@ -133,10 +133,10 @@ function html_escape(s) {
 
 
 <p id='show_detail_line'>
-<a class="btn btn-primary" href='javascript:showCase(0)'>概要{ 50.00% }</a>
+<a class="btn btn-primary" href='javascript:showCase(0)'>概要{ 100.00% }</a>
 <a class="btn btn-danger" href='javascript:showCase(1)'>失败{ 0 }</a>
-<a class="btn btn-success" href='javascript:showCase(2)'>通过{ 1 }</a>
-<a class="btn btn-info" href='javascript:showCase(3)'>所有{ 2 }</a>
+<a class="btn btn-success" href='javascript:showCase(2)'>通过{ 9 }</a>
+<a class="btn btn-info" href='javascript:showCase(3)'>所有{ 9 }</a>
 </p>
 <table id='result_table' class="table table-condensed table-bordered table-hover">
 <colgroup>
@@ -156,53 +156,231 @@ function html_escape(s) {
     <td>详细</td>
 </tr>
 
-<tr class='errorClass warning'>
+<tr class='passClass warning'>
     <td>DatabaseControlTestCase: 继承于Testcase, 是功能类 DatabaseControl 对应的测试类</td>
-    <td class="text-center">2</td>
-    <td class="text-center">1</td>
+    <td class="text-center">9</td>
+    <td class="text-center">9</td>
     <td class="text-center">0</td>
-    <td class="text-center">1</td>
-    <td class="text-center"><a href="javascript:showClassDetail('c1',2)" class="detail" id='c1'>详细</a></td>
+    <td class="text-center">0</td>
+    <td class="text-center"><a href="javascript:showClassDetail('c1',9)" class="detail" id='c1'>详细</a></td>
 </tr>
 
-<tr id='ft1_1' class='none'>
-    <td class='errorCase'><div class='testcase'>testConnect</div></td>
+<tr id='pt1_1' class='hiddenRow'>
+    <td class='passCase'><div class='testcase'>test_check_account</div></td>
     <td colspan='5' align='center'>
-    <!--默认收起错误信息 -Findyou
-    <button id='btn_ft1_1' type="button"  class="btn btn-danger btn-xs collapsed" data-toggle="collapse" data-target='#div_ft1_1'>错误</button>
-    <div id='div_ft1_1' class="collapse">  -->
-
-    <!-- 默认展开错误信息 -Findyou -->
-    <button id='btn_ft1_1' type="button"  class="btn btn-danger btn-xs" data-toggle="collapse" data-target='#div_ft1_1'>错误</button>
-    <div id='div_ft1_1' class="collapse in" >
+    <!--默认收起错误信息 -->
+    <button id='btn_pt1_1' type="button"  class="btn btn-success btn-xs collapsed" data-toggle="collapse" data-target='#div_pt1_1'>通过</button>
+    <div id='div_pt1_1' class="collapse" >
     <pre style ="text-align: left">
     
-ft1_1: Traceback (most recent call last):
-  File "./TestDatabaseControl.py", line 58, in testConnect
-    self.assertTrue(self.dbc.connect())
-  File "../database_control.py", line 51, in connect
-    raise RuntimeError(u"[看这里]%s\n%s"%(err_str, ex))
-RuntimeError: [看这里]connect sql root@45.77.94.89:3306 -p admin failed
-(2003, "Can't connect to MySQL server on '45.77.94.89' (110)")
+pt1_1: 测试登录功能
+用户名密码正确时，正常登录（root：admin）
+True
+用户名错误时，无法登录（root2：admin）
+call sql failed
+select account,password,accountlevel from management where account = 'root2'
+[]
+用户名正确，密码错误时，无法登录（root：admin2）
+False
+用户名密码都错误时，无法登录（root2：admin2）
+call sql failed
+select account,password,accountlevel from management where account = 'root2'
+[]
 
 
     </pre>
     </div>
     </td>
+    </td>
 </tr>
 
 <tr id='pt1_2' class='hiddenRow'>
-    <td class='passCase'><div class='testcase'>testGetAllCourse</div></td>
-    <td colspan='5' align='center'><span class="label label-success success">通过</span></td>
+    <td class='passCase'><div class='testcase'>test_connect</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -->
+    <button id='btn_pt1_2' type="button"  class="btn btn-success btn-xs collapsed" data-toggle="collapse" data-target='#div_pt1_2'>通过</button>
+    <div id='div_pt1_2' class="collapse" >
+    <pre style ="text-align: left">
+    
+pt1_2: 测试数据连通性
+127.0.0.1,3306,root,admin,db_education
+
+
+    </pre>
+    </div>
+    </td>
+    </td>
+</tr>
+
+<tr id='pt1_3' class='hiddenRow'>
+    <td class='passCase'><div class='testcase'>test_edit_course_info</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -->
+    <button id='btn_pt1_3' type="button"  class="btn btn-success btn-xs collapsed" data-toggle="collapse" data-target='#div_pt1_3'>通过</button>
+    <div id='div_pt1_3' class="collapse" >
+    <pre style ="text-align: left">
+    
+pt1_3: 测试添加，刷新和删除课程
+step1：检查是否存在ST001，没有则pass
+执行sql命令：select coursenum,name, lessonnum,starttime, endtime from course where coursenum='ST001'，结果为空
+step2: 添加ST001
+执行sql命令：select coursenum,name, lessonnum,starttime, endtime from course where coursenum='ST001'，结果为空
+INSERT INTO course ( coursenum, name, lessonnum, starttime, endtime) VALUES('ST001','Testing','100','2018-01-01', '2018-03-01')
+set success
+submit_info
+step3：更新ST001
+UPDATE course SET name='testing22', lessonnum='100', starttime='2018-01-01' , endtime='2018-03-01' where coursenum='ST001'
+set success
+submit_info
+step4: 删除ST001
+DELETE FROM course WHERE course.coursenum = 'ST001';
+执行sql命令：select coursenum,name, lessonnum,starttime, endtime from course where coursenum='ST001'，结果为空
+
+
+    </pre>
+    </div>
+    </td>
+    </td>
+</tr>
+
+<tr id='pt1_4' class='hiddenRow'>
+    <td class='passCase'><div class='testcase'>test_edit_student_info</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -->
+    <button id='btn_pt1_4' type="button"  class="btn btn-success btn-xs collapsed" data-toggle="collapse" data-target='#div_pt1_4'>通过</button>
+    <div id='div_pt1_4' class="collapse" >
+    <pre style ="text-align: left">
+    
+pt1_4: 测试添加，刷新和删除学生信息
+step1：检查是否存在SS002，没有则pass
+call sql failed
+step2: 添加SS002
+call sql failed
+INSERT INTO student ( studentnum, name, gender, age, pname, phone, lessonnum, accountnum, birthday, note) VALUES('SS002','name','男','10', 'pname','111222333','20','20','2008-01-01','aa')
+set success
+submit_info
+step3：更新SS002
+UPDATE student SET name='testing22', gender='男', age='10' , pname='pname', phone='111222333', lessonnum='20', accountnum='20', birthday='2008-01-01', note='aa' where studentnum='SS002'
+set success
+submit_info
+step4: 删除SS002
+in delete_student_by_id
+DELETE FROM student WHERE student.studentnum = 'SS002';
+call sql failed
+
+
+    </pre>
+    </div>
+    </td>
+    </td>
+</tr>
+
+<tr id='pt1_5' class='hiddenRow'>
+    <td class='passCase'><div class='testcase'>test_get_all_course</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -->
+    <button id='btn_pt1_5' type="button"  class="btn btn-success btn-xs collapsed" data-toggle="collapse" data-target='#div_pt1_5'>通过</button>
+    <div id='div_pt1_5' class="collapse" >
+    <pre style ="text-align: left">
+    
+pt1_5: 测试获取所有课程
+[{'etime': datetime.date(2017, 3, 1), 'stime': datetime.date(2017, 1, 1), 'lesson_no': 36L, 'id': u'C0001', 'name': u'\u8bed\u6587'}, {'etime': datetime.date(2017, 9, 2), 'stime': datetime.date(2017, 1, 2), 'lesson_no': 72L, 'id': u'C0002', 'name': u'\u6570\u5b66'}, {'etime': datetime.date(2018, 6, 24), 'stime': datetime.date(2018, 3, 24), 'lesson_no': 36L, 'id': u'C0003', 'name': u'\u7f8e\u672f'}]
+
+
+    </pre>
+    </div>
+    </td>
+    </td>
+</tr>
+
+<tr id='pt1_6' class='hiddenRow'>
+    <td class='passCase'><div class='testcase'>test_get_all_student</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -->
+    <button id='btn_pt1_6' type="button"  class="btn btn-success btn-xs collapsed" data-toggle="collapse" data-target='#div_pt1_6'>通过</button>
+    <div id='div_pt1_6' class="collapse" >
+    <pre style ="text-align: left">
+    
+pt1_6: 测试获取所有学生信息
+[{'name': u'\u5c0f\u7ea2', 'gender': u'\u5973', 'age': 20L, 'note': u'12', 'phone': u'123123123', 'birthday': datetime.date(1998, 10, 10), 'pname': u'\u963f\u65af\u8482\u82ac', 'lessonnum': 68L, 'id': u'S0002', 'accountnum': 111L}, {'name': u'\u5c0f\u738b', 'gender': u'\u7537', 'age': 8L, 'note': u'0', 'phone': u'111000222', 'birthday': datetime.date(2010, 1, 1), 'pname': u'\u8001\u738b', 'lessonnum': 18L, 'id': u'S0003', 'accountnum': 1L}, {'name': u'\u53f2\u8482\u592b', 'gender': u'\u5973', 'age': 13L, 'note': u'\uff1b', 'phone': u'123123123', 'birthday': datetime.date(2005, 1, 1), 'pname': u'\u65af\u8482\u82ac', 'lessonnum': 24L, 'id': u'S0008', 'accountnum': 3000L}, {'name': u'\u5f20\u4e09', 'gender': u'\u7537', 'age': 29L, 'note': u'\u65e0', 'phone': u'111231231', 'birthday': datetime.date(1989, 10, 10), 'pname': u'\u5f20\u4e09\u4e30', 'lessonnum': 1114L, 'id': u'S0009', 'accountnum': 1000L}, {'name': u'lily', 'gender': u'\u5973', 'age': 8L, 'note': u'0', 'phone': u'1212312312', 'birthday': datetime.date(2010, 1, 1), 'pname': u'Fiona', 'lessonnum': 0L, 'id': u'S0010', 'accountnum': 0L}]
+
+
+    </pre>
+    </div>
+    </td>
+    </td>
+</tr>
+
+<tr id='pt1_7' class='hiddenRow'>
+    <td class='passCase'><div class='testcase'>test_get_course_by_id</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -->
+    <button id='btn_pt1_7' type="button"  class="btn btn-success btn-xs collapsed" data-toggle="collapse" data-target='#div_pt1_7'>通过</button>
+    <div id='div_pt1_7' class="collapse" >
+    <pre style ="text-align: left">
+    
+pt1_7: 测试根据课程id获取课程信息
+step1：使用正常的课程id
+{'etime': datetime.date(2017, 3, 1), 'stime': datetime.date(2017, 1, 1), 'lesson_no': 36L, 'id': u'C0001', 'name': u'\u8bed\u6587'}
+step1：使用错误的课程id
+执行sql命令：select coursenum,name, lessonnum,starttime, endtime from course where coursenum='S0001'，结果为空
+[]
+
+
+    </pre>
+    </div>
+    </td>
+    </td>
+</tr>
+
+<tr id='pt1_8' class='hiddenRow'>
+    <td class='passCase'><div class='testcase'>test_get_student_by_id</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -->
+    <button id='btn_pt1_8' type="button"  class="btn btn-success btn-xs collapsed" data-toggle="collapse" data-target='#div_pt1_8'>通过</button>
+    <div id='div_pt1_8' class="collapse" >
+    <pre style ="text-align: left">
+    
+pt1_8: 测试根据学号获取学生信息
+学号错误时(id = S1111)，获取id为空
+call sql failed
+[]
+学号正确时(id = S0002)，正常获取学生信息
+{'name': u'\u5c0f\u7ea2', 'gender': u'\u5973', 'age': 20L, 'note': u'12', 'phone': u'123123123', 'birthday': datetime.date(1998, 10, 10), 'pname': u'\u963f\u65af\u8482\u82ac', 'lessonnum': 68L, 'id': u'S0002', 'accountnum': 111L}
+
+
+    </pre>
+    </div>
+    </td>
+    </td>
+</tr>
+
+<tr id='pt1_9' class='hiddenRow'>
+    <td class='passCase'><div class='testcase'>test_print_setting</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -->
+    <button id='btn_pt1_9' type="button"  class="btn btn-success btn-xs collapsed" data-toggle="collapse" data-target='#div_pt1_9'>通过</button>
+    <div id='div_pt1_9' class="collapse" >
+    <pre style ="text-align: left">
+    
+pt1_9: 测试打印数据库信息
+127.0.0.1,3306,root,admin,db_education
+127.0.0.1,3306,root,admin,db_education
+
+
+    </pre>
+    </div>
+    </td>
+    </td>
 </tr>
 
 <tr id='total_row' class="text-center active">
     <td>总计</td>
-    <td>2</td>
-    <td>1</td>
+    <td>9</td>
+    <td>9</td>
     <td>0</td>
-    <td>1</td>
-    <td>通过率：50.00%</td>
+    <td>0</td>
+    <td>通过率：100.00%</td>
 </tr>
 </table>
 
