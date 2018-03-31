@@ -166,6 +166,7 @@ class StudentPlain():
         
         if "" in student_dict.values():
             print "info invalid"
+            self.alert("Info", u"信息未填写完整，请完整填写所有信息")
             return
             
         if not student_dict['id'].startswith('S'):
@@ -184,7 +185,7 @@ class StudentPlain():
         print "submit_student_info"
         
     def add_item(self):
-        self.edit_view(['','','','','','','','','',''], action='add')
+        self.edit_view(['','','','0','','','','','',''], action='add')
         
     def delete_item(self):
         print 'delete_item'
