@@ -10,6 +10,7 @@ import MySQLdb
 import time
 
 from course_plain import CoursePlain
+from signin_plain import SigninPlain
 from student_plain import StudentPlain
 from database_control import DatabaseControl
 from database_control import DatabasePlain
@@ -23,6 +24,7 @@ class MainPlain():
         self.student_plain = None
         self.course_plain = None
         self.database_plain = None
+        self.signin_plain = None
         self.login_plain = None
         self.dbc = DatabaseControl()
         self.root = Tk() 
@@ -44,6 +46,7 @@ class MainPlain():
         manageMenu = Menu(menubar, tearoff = 0)
         manageMenu.add_command(label=u'管理学生', command= self.manage_student)
         manageMenu.add_command(label=u'管理课程', command= self.manage_course) 
+        manageMenu.add_command(label=u'点名', command= self.student_signin) 
         
         ## 编辑
         editMenu = Menu(menubar, tearoff = 0)
@@ -165,6 +168,18 @@ class MainPlain():
         else:
             self.course_plain = CoursePlain(self.dbc)
         self.course_plain.show()
+
+    def student_signin(self):
+        if not self.login_status:
+            self.alert(u"请先登录")
+            return
+            
+        if self.signin_plain is not None and self.signin_plain.root is not None:
+            # self.alert(u"课程管理界面已存在")
+            self.signin_plain.destroy()
+        else:
+            self.signin_plain = SigninPlain(self.dbc)
+        self.signin_plain.show()
 
     def close_course_plain(self):
         if self.course_plain is not None  and self.course_plain.root is not None:
