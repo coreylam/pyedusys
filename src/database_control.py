@@ -209,6 +209,7 @@ class DatabaseControl():
     def get_student_by_id(self, id):
         sqlcmd = "select studentnum, name, gender, age, pname, phone, lessonnum, accountnum, birthday, note  from student where studentnum='%s'"%id
         self.connect()
+        # print sqlcmd
         if self.cur.execute(sqlcmd) == 0: 
                 print "call sql failed"
                 self.close()
