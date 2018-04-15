@@ -29,6 +29,7 @@ class MainPlain():
         self.login_plain = None
         self.dbc = DatabaseControl()
         self.root = Tk() 
+        self.root.geometry('500x300+500+200')
         self.root.protocol('WM_DELETE_WINDOW', self.close)
         #创建属于root窗口的菜单（Menu）对象，menubar是一整个菜单栏
         menubar = Menu(self.root) 
@@ -63,7 +64,7 @@ class MainPlain():
 
         #在窗体中加入菜单栏
         self.root['menu']=menubar
-        self.root.title(u'Menu示例')
+        self.root.title(u'学生信息管理系统')
         self.root.mainloop()
 
             
@@ -89,6 +90,7 @@ class MainPlain():
             
     def login_show(self):
         self.login_windows = Toplevel()
+        txt_font = ('Arial', 12)
         # self.login_windows.protocol('WM_DELETE_WINDOW', self.destroy)
         self.login_windows.resizable(width=False, height=False)
         label_top = Label(self.login_windows, text=u"用户登录", font=('Arial', 25))
@@ -98,27 +100,31 @@ class MainPlain():
         self.login_dict['passwd'] = ""
         self.var_user = tk.StringVar()
         self.var_user.set(self.login_dict['user'])
-        label_user = Label(self.login_windows, text=u'用户名')
-        entry_user = Entry(self.login_windows, textvariable=self.var_user)
+        label_user = Label(self.login_windows, text=u'用户名', font = txt_font)
+        entry_user = Entry(self.login_windows, textvariable=self.var_user,font = txt_font)
         # entry_url.place(x=160, y=150)
         label_user.grid(row=4,column=0)
         entry_user.grid(row=4,column=1, columnspan=2)
         
         self.var_passwd = tk.StringVar()
         self.var_passwd.set(self.login_dict['passwd'])
-        label_passwd = Label(self.login_windows, text=u'密码')
-        entry_passwd = Entry(self.login_windows, textvariable=self.var_passwd, show="*")
+        label_passwd = Label(self.login_windows, text=u'密码',font = txt_font)
+        entry_passwd = Entry(self.login_windows, textvariable=self.var_passwd, show="*",font = txt_font)
         # entry_url.place(x=160, y=150)
         label_passwd.grid(row=5,column=0)
         entry_passwd.grid(row=5,column=1, columnspan=2)
         
-        btn_submit = Button(self.login_windows, text="登录", command = self.check_login)
-        btn_cancel = Button(self.login_windows, text="取消", command = self.login_windows.destroy)
+        btn_submit = Button(self.login_windows, text="登录", command = self.check_login, font = txt_font)
+        btn_submit.bind("<Return>", self.check_login_event)
+        btn_cancel = Button(self.login_windows, text="取消", command = self.login_windows.destroy,font = txt_font)
         btn_submit.grid(row=6, column=0)
         btn_cancel.grid(row=6, column=2)
-        
         self.login_windows.mainloop()
         
+    def check_login_event(self, event):
+        # print event
+        self.check_login()
+
     def get_submit_info(self):
         print "submit_info"
 
@@ -210,7 +216,11 @@ class MainPlain():
             self.database_plain = None
 
     def export_data(self):
-        outfile = DataExport(self.dbc, self.root)
+        if not self.login_status:
+            self.alert(u"请先登录")
+            return 
+        export_window = Toplevel()
+        outfile = DataExport(self.dbc, export_window)
         outfile.show()
 
 
