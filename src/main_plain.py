@@ -15,6 +15,7 @@ from student_plain import StudentPlain
 from database_control import DatabaseControl
 from database_control import DatabasePlain
 from login_plain import LoginPlain
+from data_export import DataExport
 
 class MainPlain():
 
@@ -36,6 +37,7 @@ class MainPlain():
         fileMenu = Menu(menubar, tearoff = 0)
         fileMenu.add_command(label=u'登录',command = self.login)
         fileMenu.add_command(label=u'退出账号',command = self.logout)
+        fileMenu.add_command(label=u'导出数据', command = self.export_data)
         fileMenu.add_command(label=u'关闭',command = self.close)
 
         ## 关于
@@ -51,7 +53,7 @@ class MainPlain():
         ## 编辑
         editMenu = Menu(menubar, tearoff = 0)
         editMenu.add_command(label=u'数据库', command= self.manage_database)
-        editMenu.add_command(label=u'Null', command= self.dbc.print_setting)
+        # editMenu.add_command(label=u'Null', command= self.dbc.print_setting)
         
         #在菜单栏中加入菜单
         menubar.add_cascade(label=u"文件", menu = fileMenu)
@@ -206,6 +208,11 @@ class MainPlain():
             self.database_plain.destroy()
             del self.database_plain
             self.database_plain = None
+
+    def export_data(self):
+        outfile = DataExport(self.dbc, self.root)
+        outfile.show()
+
 
 if __name__ == '__main__':
     win = MainPlain()
